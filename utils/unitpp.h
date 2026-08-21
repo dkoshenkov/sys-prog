@@ -2,23 +2,23 @@
 
 #include <iostream>
 
-class UnitTestCaseGuard
-{
+class UnitTestCaseGuard {
 public:
-	UnitTestCaseGuard(
+    UnitTestCaseGuard(
 		std::string_view name)
-		: m_name(name)
-	{
-		std::cout << "\t-------- " << name << " started --------\n";
-	}
+    :
+    m_name(name)
+    {
+        std::cout << "\t-------- " << name << " started --------\n";
+    }
 
-	~UnitTestCaseGuard()
-	{
-		std::cout << "\t-------- " << m_name << " done --------\n";
-	}
+    ~UnitTestCaseGuard()
+    {
+        std::cout << "\t-------- " << m_name << " done --------\n";
+    }
 
 private:
-	const std::string m_name;
+    const std::string m_name;
 };
 
 #define unit_test_start() UnitTestCaseGuard test_case_guard(__func__)

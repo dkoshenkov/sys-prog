@@ -34,4 +34,4 @@
 	}								\
 } while(0)
 
-bool doCmdMaxPoints(int argc, char **argv);
+bool doCmdMaxPoints(int argc, char** argv);

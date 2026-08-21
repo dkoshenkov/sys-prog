@@ -6,12 +6,11 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-int main()
-{
-	int fd = open("/tmp/fifo_server", O_WRONLY);
-	pid_t pid = getpid();
-	write(fd, &pid, sizeof(pid));
-	printf("my pid %d is sent to server\n", (int) pid);
-	close(fd);
-	return 0;
+int main() {
+    int fd = open("/tmp/fifo_server", O_WRONLY);
+    pid_t pid = getpid();
+    write(fd, &pid, sizeof(pid));
+    printf("my pid %d is sent to server\n", (int)pid);
+    close(fd);
+    return 0;
 }

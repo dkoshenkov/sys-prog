@@ -35,116 +35,94 @@ extern "C" {
  * ASAN instrumented too.
  */
 struct rlist {
-	struct rlist *prev;
-	struct rlist *next;
+    struct rlist* prev;
+    struct rlist* next;
 };
 
 /**
  * init list head (or list entry as ins't included in list)
  */
-static inline void
-rlist_create(struct rlist *list)
-{
-	list->next = list;
-	list->prev = list;
+static inline void rlist_create(struct rlist* list) {
+    list->next = list;
+    list->prev = list;
 }
 
 /**
  * add item to list
  */
-static inline void
-rlist_add(struct rlist *head, struct rlist *item)
-{
-	item->prev = head;
-	item->next = head->next;
-	item->prev->next = item;
-	item->next->prev = item;
+static inline void rlist_add(struct rlist* head, struct rlist* item) {
+    item->prev = head;
+    item->next = head->next;
+    item->prev->next = item;
+    item->next->prev = item;
 }
 
 /**
  * add item to list tail
  */
-static inline void
-rlist_add_tail(struct rlist *head, struct rlist *item)
-{
-	item->next = head;
-	item->prev = head->prev;
-	item->prev->next = item;
-	item->next->prev = item;
+static inline void rlist_add_tail(struct rlist* head, struct rlist* item) {
+    item->next = head;
+    item->prev = head->prev;
+    item->prev->next = item;
+    item->next->prev = item;
 }
 
 /**
  * delete element
  */
-static inline void
-rlist_del(struct rlist *item)
-{
-	item->prev->next = item->next;
-	item->next->prev = item->prev;
-	rlist_create(item);
+static inline void rlist_del(struct rlist* item) {
+    item->prev->next = item->next;
+    item->next->prev = item->prev;
+    rlist_create(item);
 }
 
-static inline struct rlist *
-rlist_shift(struct rlist *head)
-{
-        struct rlist *shift = head->next;
-        head->next = shift->next;
-        shift->next->prev = head;
-        shift->next = shift->prev = shift;
-        return shift;
+static inline struct rlist* rlist_shift(struct rlist* head) {
+    struct rlist* shift = head->next;
+    head->next = shift->next;
+    shift->next->prev = head;
+    shift->next = shift->prev = shift;
+    return shift;
 }
 
-static inline struct rlist *
-rlist_shift_tail(struct rlist *head)
-{
-        struct rlist *shift = head->prev;
-        rlist_del(shift);
-        return shift;
+static inline struct rlist* rlist_shift_tail(struct rlist* head) {
+    struct rlist* shift = head->prev;
+    rlist_del(shift);
+    return shift;
 }
 
 /**
  * return first element
  */
-static inline struct rlist *
-rlist_first(const struct rlist *head)
-{
-	return head->next;
+static inline struct rlist* rlist_first(const struct rlist* head) {
+    return head->next;
 }
 
 /**
  * return last element
  */
-static inline struct rlist *
-rlist_last(const struct rlist *head)
-{
-	return head->prev;
+static inline struct rlist* rlist_last(const struct rlist* head) {
+    return head->prev;
 }
 
 /**
  * return next element by element
  */
-static inline struct rlist *
-rlist_next(const struct rlist *item)
-{
-	return item->next;
+static inline struct rlist* rlist_next(const struct rlist* item) {
+    return item->next;
 }
 
 /**
  * return previous element
  */
-static inline struct rlist *
-rlist_prev(const struct rlist *item)
-{
-	return item->prev;
+static inline struct rlist* rlist_prev(const struct rlist* item) {
+    return item->prev;
 }
 
 /**
  * return TRUE if list is empty
  */
-static inline int
-rlist_empty(const struct rlist *item)
-{
-	return item->next == item->prev && item->next == item;
+static inline int rlist_empty(const struct rlist* item) {
+    return item->next == item->prev && item->next == item;
 }
 
 /**
@@ -152,11 +130,9 @@ rlist_empty(const struct rlist *item)
 @param to the head that will precede our entry
 @param item the entry to move
 */
-static inline void
-rlist_move(struct rlist *to, struct rlist *item)
-{
-	rlist_del(item);
-	rlist_add(to, item);
+static inline void rlist_move(struct rlist* to, struct rlist* item) {
+    rlist_del(item);
+    rlist_add(to, item);
 }
 
 /**
@@ -164,81 +140,71 @@ rlist_move(struct rlist *to, struct rlist *item)
 @param to the head that will precede our entry
 @param item the entry to move
 */
-static inline void
-rlist_move_tail(struct rlist *to, struct rlist *item)
-{
-	item->prev->next = item->next;
-	item->next->prev = item->prev;
-	item->next = to;
-	item->prev = to->prev;
-	item->prev->next = item;
-	item->next->prev = item;
+static inline void rlist_move_tail(struct rlist* to, struct rlist* item) {
+    item->prev->next = item->next;
+    item->next->prev = item->prev;
+    item->next = to;
+    item->prev = to->prev;
+    item->prev->next = item;
+    item->next->prev = item;
 }
 
-static inline void
-rlist_swap(struct rlist *rhs, struct rlist *lhs)
-{
-	struct rlist tmp = *rhs;
-	*rhs = *lhs;
-	*lhs = tmp;
-	/* Relink the nodes. */
-	if (lhs->next == rhs)              /* Take care of empty list case */
-		lhs->next = lhs;
-	lhs->next->prev = lhs;
-	lhs->prev->next = lhs;
-	if (rhs->next == lhs)              /* Take care of empty list case */
-		rhs->next = rhs;
-	rhs->next->prev = rhs;
-	rhs->prev->next = rhs;
+static inline void rlist_swap(struct rlist* rhs, struct rlist* lhs) {
+    struct rlist tmp = *rhs;
+    *rhs = *lhs;
+    *lhs = tmp;
+    /* Relink the nodes. */
+    if (lhs->next == rhs) /* Take care of empty list case */
+        lhs->next = lhs;
+    lhs->next->prev = lhs;
+    lhs->prev->next = lhs;
+    if (rhs->next == lhs) /* Take care of empty list case */
+        rhs->next = rhs;
+    rhs->next->prev = rhs;
+    rhs->prev->next = rhs;
 }
 
 /**
  * move all items of list head2 to the head of list head1
  */
-static inline void
-rlist_splice(struct rlist *head1, struct rlist *head2)
-{
-	if (!rlist_empty(head2)) {
-		head1->next->prev = head2->prev;
-		head2->prev->next = head1->next;
-		head1->next = head2->next;
-		head2->next->prev = head1;
-		rlist_create(head2);
-	}
+static inline void rlist_splice(struct rlist* head1, struct rlist* head2) {
+    if (!rlist_empty(head2)) {
+        head1->next->prev = head2->prev;
+        head2->prev->next = head1->next;
+        head1->next = head2->next;
+        head2->next->prev = head1;
+        rlist_create(head2);
+    }
 }
 
 /**
  * move all items of list head2 to the tail of list head1
  */
-static inline void
-rlist_splice_tail(struct rlist *head1, struct rlist *head2)
-{
-	if (!rlist_empty(head2)) {
-		head1->prev->next = head2->next;
-		head2->next->prev = head1->prev;
-		head1->prev = head2->prev;
-		head2->prev->next = head1;
-		rlist_create(head2);
-	}
+static inline void rlist_splice_tail(struct rlist* head1, struct rlist* head2) {
+    if (!rlist_empty(head2)) {
+        head1->prev->next = head2->next;
+        head2->next->prev = head1->prev;
+        head1->prev = head2->prev;
+        head2->prev->next = head1;
+        rlist_create(head2);
+    }
 }
 
 /**
  * move the initial part of list head2, up to but excluding item,
  * to list head1; the old content of head1 is discarded
  */
-static inline void
-rlist_cut_before(struct rlist *head1, struct rlist *head2, struct rlist *item)
-{
-	if (head1->next == item) {
-		rlist_create(head1);
-		return;
-	}
-	head1->next = head2->next;
-	head1->next->prev = head1;
-	head1->prev = item->prev;
-	head1->prev->next = head1;
-	head2->next = item;
-	item->prev = head2;
+static inline void rlist_cut_before(struct rlist* head1, struct rlist* head2, struct rlist* item) {
+    if (head1->next == item) {
+        rlist_create(head1);
+        return;
+    }
+    head1->next = head2->next;
+    head1->next->prev = head1;
+    head1->prev = item->prev;
+    head1->prev->next = head1;
+    head2->next = item;
+    item->prev = head2;
 }
 
 /**
@@ -275,15 +241,13 @@ rlist_cut_before(struct rlist *head1, struct rlist *head2, struct rlist *item)
  * @pre the list is not empty
  */
 #define rlist_shift_entry(head, type, member)				\
-        rlist_entry(rlist_shift(head), type, member)			\
-
+        rlist_entry(rlist_shift(head), type, member)
 /**
  * Remove one element from the list tail and return it
  * @pre the list is not empty
  */
 #define rlist_shift_tail_entry(head, type, member)				\
-        rlist_entry(rlist_shift_tail(head), type, member)			\
-
+        rlist_entry(rlist_shift_tail(head), type, member)
 
 /**
  * return last entry
